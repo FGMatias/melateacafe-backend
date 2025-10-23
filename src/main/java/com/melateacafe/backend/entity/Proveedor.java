@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class Proveedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_proveedor")
     private int idProveedor;
 
     @Column(name = "nombre")

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class Mesa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_mesa")
     private int idMesa;
 
     @ManyToOne

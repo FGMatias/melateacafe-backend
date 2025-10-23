@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class EstadoPedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_estado_pedido")
     private int idEstadoPedido;
 
     @Column(name = "nombre")

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 public class DetallePedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_detalle_pedido")
     private int idDetallePedido;
 
     @ManyToOne

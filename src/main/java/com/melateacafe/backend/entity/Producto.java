@@ -10,10 +10,11 @@ import java.time.LocalDateTime;
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_producto")
     private int idProducto;
 
     @ManyToOne
-    @JoinColumn(name = "id_categoria", referencedColumnName = "id_categoria")
+    @JoinColumn(name = "id_categoria", referencedColumnName = "id_categoria_producto")
     private CategoriaProducto categoriaProducto;
 
     @Column(name = "nombre")
@@ -29,10 +30,10 @@ public class Producto {
     private String imagenUrl;
 
     @Column(name = "stock_actual")
-    private BigDecimal stockActual;
+    private Integer stockActual;
 
     @Column(name = "stock_minimo")
-    private BigDecimal stockMinimo;
+    private Integer stockMinimo;
 
     @Column(name = "estado")
     private boolean estado;
@@ -88,19 +89,19 @@ public class Producto {
         this.imagenUrl = imagenUrl;
     }
 
-    public BigDecimal getStockActual() {
+    public Integer getStockActual() {
         return stockActual;
     }
 
-    public void setStockActual(BigDecimal stockActual) {
+    public void setStockActual(Integer stockActual) {
         this.stockActual = stockActual;
     }
 
-    public BigDecimal getStockMinimo() {
+    public Integer getStockMinimo() {
         return stockMinimo;
     }
 
-    public void setStockMinimo(BigDecimal stockMinimo) {
+    public void setStockMinimo(Integer stockMinimo) {
         this.stockMinimo = stockMinimo;
     }
 

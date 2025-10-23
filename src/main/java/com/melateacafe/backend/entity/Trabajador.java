@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class Trabajador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_trabajador")
     private int idTrabajador;
 
     @ManyToOne

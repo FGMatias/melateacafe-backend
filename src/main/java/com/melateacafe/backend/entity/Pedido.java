@@ -11,6 +11,7 @@ import java.util.function.BiFunction;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_pedido")
     private int idPedido;
 
     @ManyToOne

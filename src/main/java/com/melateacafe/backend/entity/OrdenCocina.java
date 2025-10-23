@@ -10,6 +10,7 @@ import java.time.LocalTime;
 public class OrdenCocina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_orden_cocina")
     private int idOrdenCocina;
 
     @ManyToOne

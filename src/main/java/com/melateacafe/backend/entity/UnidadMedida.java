@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 public class UnidadMedida {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_unidad_medida")
     private int idUnidadMedida;
 
     @Column(name = "nombre")

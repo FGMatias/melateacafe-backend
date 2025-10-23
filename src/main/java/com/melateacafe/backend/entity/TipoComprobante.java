@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class TipoComprobante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tipo_comprobante")
     private int idTipoComprobante;
 
     @Column(name = "nombre")

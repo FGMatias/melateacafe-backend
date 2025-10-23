@@ -2,6 +2,7 @@ package com.melateacafe.backend.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,13 +10,14 @@ import java.time.LocalDateTime;
 public class Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cargo")
     private int idCargo;
 
     @Column(name = "nombre")
-    private String nomnbre;
+    private String nombre;
 
-    @Column(name = "salario_base")
-    private double salarioBase;
+    @Column(name = "salario_base", precision = 10, scale = 2)
+    private BigDecimal salarioBase;
 
     @Column(name = "estado")
     private boolean estado;
@@ -31,19 +33,19 @@ public class Cargo {
         this.idCargo = idCargo;
     }
 
-    public String getNomnbre() {
-        return nomnbre;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNomnbre(String nomnbre) {
-        this.nomnbre = nomnbre;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
-    public double getSalarioBase() {
+    public BigDecimal getSalarioBase() {
         return salarioBase;
     }
 
-    public void setSalarioBase(double salarioBase) {
+    public void setSalarioBase(BigDecimal salarioBase) {
         this.salarioBase = salarioBase;
     }
 

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class Rol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_rol")
     private int idRol;
 
     @Column(name = "nombre", unique = true)

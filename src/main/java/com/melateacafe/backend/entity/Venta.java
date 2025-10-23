@@ -11,6 +11,7 @@ import java.time.LocalTime;
 public class Venta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_venta")
     private int idVenta;
 
     @ManyToOne
