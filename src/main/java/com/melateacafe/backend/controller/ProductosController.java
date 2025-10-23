@@ -8,16 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/v1/productos")
 public class ProductosController {
+    private final Logger logger = Logger.getLogger(ProductosController.class.getName());
 
     @Autowired
     private CategoriaProductoService categoriaProductoService;
 
     @GetMapping("/categorias")
     public List<CategoriaProducto> getAllCategorias() {
+        logger.info("Lista de categorias");
         return categoriaProductoService.findAll();
     }
 }
