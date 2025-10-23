@@ -1,4 +1,12 @@
 package com.melateacafe.backend.repository;
 
-public interface TrabajadorRepository {
+import com.melateacafe.backend.entity.Trabajador;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface TrabajadorRepository extends JpaRepository<Trabajador, Integer> {
+    List<Trabajador> findByCargo_IdCargo(int idCargo);
 }
