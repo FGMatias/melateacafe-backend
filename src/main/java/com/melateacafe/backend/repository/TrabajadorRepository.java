@@ -9,4 +9,7 @@ import java.util.List;
 @Repository
 public interface TrabajadorRepository extends JpaRepository<Trabajador, Integer> {
     List<Trabajador> findByCargo_IdCargo(int idCargo);
+    boolean existsByNumeroDocumento(String numeroDocumento);
+    boolean existsByEmail(String email);
+    List<Trabajador> findByEstado(boolean estado);
 }
