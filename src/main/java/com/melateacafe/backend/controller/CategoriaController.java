@@ -20,7 +20,7 @@ public class CategoriaController {
     private CategoriaProductoService categoriaProductoService;
 
     @GetMapping()
-    public ResponseEntity<List<CategoriaProducto>> getAll() {
+    public ResponseEntity<List<CategoriaProducto>> findAll() {
         logger.info("Obteniendo todas las categorias");
         List<CategoriaProducto> categorias = categoriaProductoService.findAll();
         return ResponseEntity.ok(categorias);
