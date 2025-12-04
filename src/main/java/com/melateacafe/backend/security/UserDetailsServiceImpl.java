@@ -1,5 +1,8 @@
 package com.melateacafe.backend.security;
 
+import com.melateacafe.backend.entity.Usuario;
+import com.melateacafe.backend.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,24 +17,26 @@ import java.util.List;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final UserRepository userRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        if (!user.getIsActive()) {
+        if (!usuario.isEstado()) {
             throw new UsernameNotFoundException("Usuario inactivo: " + username);
         }
 
-        Collection<GrantedAuthority> authorities = getAuthorities(user);
+        Collection<GrantedAuthority> authorities = getAuthorities(usuario);
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getIsActive(),
+                usuario.getUsername(),
+                usuario.getPassword(),
+                usuario.isEstado(),
                 true,
                 true,
                 true,
@@ -39,10 +44,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         );
     }
 
-    private Collection<GrantedAuthority> getAuthorities(User user) {
+    private Collection<GrantedAuthority> getAuthorities(Usuario usuario) {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        String roleName = user.getRole().getName().toUpperCase().replace(" ", "_");
+        String roleName = usuario.getRol().getNombre().toUpperCase().replace(" ", "_");
         authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
 
         return authorities;
