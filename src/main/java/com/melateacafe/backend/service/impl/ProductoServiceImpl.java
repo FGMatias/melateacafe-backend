@@ -163,6 +163,8 @@ public class ProductoServiceImpl implements ProductoService {
         response.setDescripcion(producto.getDescripcion());
         response.setPrecio(producto.getPrecio());
         response.setImagenUrl(producto.getImagenUrl());
+        response.setStockActual(producto.getStockActual());
+        response.setStockMinimo(producto.getStockMinimo());
         response.setEstado(producto.isEstado());
         return response;
     }
