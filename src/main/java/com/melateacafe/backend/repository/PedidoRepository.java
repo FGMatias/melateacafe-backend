@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
-    List<Pedido> findByEstado_IdEstadoPedido(Integer idEstadoPedido);
+    List<Pedido> findByEstadoPedido_IdEstadoPedido(Integer idEstadoPedido);
 
     List<Pedido> findByTipoPedido_IdTipoPedido(Integer idTipoPedido);
 

@@ -203,7 +203,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     @Transactional(readOnly = true)
     public List<PedidoResponseDTO> findByEstado(Integer idEstado) {
-        return pedidoRepository.findByEstado_IdEstadoPedido(idEstado).stream()
+        return pedidoRepository.findByEstadoPedido_IdEstadoPedido(idEstado).stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }

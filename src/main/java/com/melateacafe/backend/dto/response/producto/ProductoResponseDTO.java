@@ -11,6 +11,8 @@ public class ProductoResponseDTO {
     private String descripcion;
     private BigDecimal precio;
     private String imagenUrl;
+    private Integer stockActual;
+    private Integer stockMinimo;
     private Boolean estado;
 
     public ProductoResponseDTO() {
@@ -62,6 +64,22 @@ public class ProductoResponseDTO {
 
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+
+    public Integer getStockActual() {
+        return stockActual;
+    }
+
+    public void setStockActual(Integer stockActual) {
+        this.stockActual = stockActual;
+    }
+
+    public Integer getStockMinimo() {
+        return stockMinimo;
+    }
+
+    public void setStockMinimo(Integer stockMinimo) {
+        this.stockMinimo = stockMinimo;
     }
 
     public Boolean getEstado() {
