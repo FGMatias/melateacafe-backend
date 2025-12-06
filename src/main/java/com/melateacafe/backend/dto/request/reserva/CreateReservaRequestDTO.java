@@ -23,7 +23,7 @@ public class CreateReservaRequestDTO {
     @NotNull(message = "La fecha de reserva es obligatoria")
     private LocalDate fechaReserva;
 
-    private Boolean estado;
+    private Boolean estado = true;
 
     public CreateReservaRequestDTO() {
     }

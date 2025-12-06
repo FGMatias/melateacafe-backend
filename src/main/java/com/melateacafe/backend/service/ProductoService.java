@@ -1,10 +1,8 @@
 package com.melateacafe.backend.service;
 
-import com.melateacafe.backend.dto.ProductoDTO;
 import com.melateacafe.backend.dto.request.producto.CreateProductoRequestDTO;
 import com.melateacafe.backend.dto.request.producto.UpdateProductoRequestDTO;
 import com.melateacafe.backend.dto.response.producto.ProductoResponseDTO;
-import com.melateacafe.backend.entity.Producto;
 
 import java.math.BigDecimal;
 import java.util.List;

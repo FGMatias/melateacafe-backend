@@ -43,6 +43,9 @@ public class Cliente {
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
+    @Column(name = "estado")
+    private Boolean estado;
+
     public int getIdCliente() {
         return idCliente;
     }
@@ -129,5 +132,13 @@ public class Cliente {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

@@ -1,12 +1,9 @@
 package com.melateacafe.backend.controller;
 
-import com.melateacafe.backend.dto.ProductoDTO;
 import com.melateacafe.backend.dto.request.producto.CreateProductoRequestDTO;
 import com.melateacafe.backend.dto.request.producto.UpdateProductoRequestDTO;
 import com.melateacafe.backend.dto.response.producto.ProductoResponseDTO;
-import com.melateacafe.backend.entity.Producto;
 import com.melateacafe.backend.service.ProductoService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

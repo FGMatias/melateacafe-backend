@@ -80,7 +80,7 @@ public class MesaServiceImpl implements MesaService {
         mesa.setEstadoMesa(estadoMesa);
         mesa.setNumero(request.getNumero());
         mesa.setCapacidad(request.getCapacidad());
-        mesa.setEstado(request.getEstado() != null ? request.getEstado() : mesa.getEstado());
+        mesa.setEstado(request.getEstado() != null ? request.getEstado() : mesa.isEstado());
 
         Mesa updated = mesaRepository.save(mesa);
         return convertToResponse(updated);

@@ -1,13 +1,22 @@
 package com.melateacafe.backend.dto.response.cliente;
 
+import com.melateacafe.backend.dto.response.tipo_documento.TipoDocumentoResponseDTO;
+
+import java.time.LocalDateTime;
+
 public class ClienteResponseDTO {
     private Integer idCliente;
+    private TipoDocumentoResponseDTO tipoDocumento;
     private String nombres;
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String numeroDocumento;
+    private String razonSocial;
     private String telefono;
     private String email;
+    private String direccion;
+    private LocalDateTime fechaCreacion;
+    private Boolean estado;
 
     public ClienteResponseDTO() {
     }
@@ -18,6 +27,14 @@ public class ClienteResponseDTO {
 
     public void setIdCliente(Integer idCliente) {
         this.idCliente = idCliente;
+    }
+
+    public TipoDocumentoResponseDTO getTipoDocumento() {
+        return tipoDocumento;
+    }
+
+    public void setTipoDocumento(TipoDocumentoResponseDTO tipoDocumento) {
+        this.tipoDocumento = tipoDocumento;
     }
 
     public String getNombres() {
@@ -52,6 +69,14 @@ public class ClienteResponseDTO {
         this.numeroDocumento = numeroDocumento;
     }
 
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
+
     public String getTelefono() {
         return telefono;
     }
@@ -66,5 +91,29 @@ public class ClienteResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

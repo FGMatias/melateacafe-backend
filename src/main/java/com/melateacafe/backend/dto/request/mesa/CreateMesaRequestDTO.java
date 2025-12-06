@@ -17,7 +17,7 @@ public class CreateMesaRequestDTO {
     @Min(value = 1, message = "La capacidad debe ser al menos 1 persona")
     private Integer capacidad;
 
-    private Boolean estado;
+    private Boolean estado = true;
 
     public CreateMesaRequestDTO() {
     }

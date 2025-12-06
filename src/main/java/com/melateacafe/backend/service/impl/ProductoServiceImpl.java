@@ -1,6 +1,5 @@
 package com.melateacafe.backend.service.impl;
 
-import com.melateacafe.backend.dto.ProductoDTO;
 import com.melateacafe.backend.dto.request.producto.CreateProductoRequestDTO;
 import com.melateacafe.backend.dto.request.producto.UpdateProductoRequestDTO;
 import com.melateacafe.backend.dto.response.categoria.CategoriaResponseDTO;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
