@@ -10,28 +10,6 @@ public class UsuarioDTO {
     @NotNull(message = "El trabajador es obligatorio")
     private Integer idTrabajador;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(
-        min = 2,
-        max = 100,
-        message = "El nombre debe tener entre 2 y 100 caracteres"
-    )
-    private String nombre;
-
-    @NotBlank(message = "El apellido paterno es obligatorio")
-    @Size(
-        min = 2,
-        max = 50,
-        message = "El apellido paterno debe tener entre 2 y 50 caracteres"
-    )
-    private String apellidoPaterno;
-
-    @Size(
-        max = 50,
-        message = "El apellido materno no puede exceder 50 caracteres"
-    )
-    private String apellidoMaterno;
-
     @NotBlank(message = "El nombre de usuario es obligatorio")
     @Size(
         min = 4,
@@ -75,30 +53,6 @@ public class UsuarioDTO {
 
     public void setIdTrabajador(Integer idTrabajador) {
         this.idTrabajador = idTrabajador;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellidoPaterno() {
-        return apellidoPaterno;
-    }
-
-    public void setApellidoPaterno(String apellidoPaterno) {
-        this.apellidoPaterno = apellidoPaterno;
-    }
-
-    public String getApellidoMaterno() {
-        return apellidoMaterno;
-    }
-
-    public void setApellidoMaterno(String apellidoMaterno) {
-        this.apellidoMaterno = apellidoMaterno;
     }
 
     public String getUsername() {

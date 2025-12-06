@@ -56,9 +56,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setRol(rol);
         usuario.setTrabajador(trabajador);
-        usuario.setNombre(usuarioDTO.getNombre());
-        usuario.setApellidoPaterno(usuarioDTO.getApellidoPaterno());
-        usuario.setApellidoMaterno(usuarioDTO.getApellidoMaterno());
         usuario.setUsername(usuarioDTO.getUsername());
 
         String passwordEncriptado = passwordEncoder.encode(usuarioDTO.getPassword());
@@ -104,10 +101,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             usuario.setTrabajador(trabajador);
         }
-
-        usuario.setNombre(usuario.getNombre());
-        usuario.setApellidoPaterno(usuarioDTO.getApellidoPaterno());
-        usuario.setApellidoMaterno(usuarioDTO.getApellidoMaterno());
 
         if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isEmpty()) {
             String passwordEncriptado = passwordEncoder.encode(usuarioDTO.getPassword());
