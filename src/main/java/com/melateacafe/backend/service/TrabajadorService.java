@@ -1,17 +1,20 @@
 package com.melateacafe.backend.service;
 
 import com.melateacafe.backend.dto.TrabajadorDTO;
+import com.melateacafe.backend.dto.request.trabajador.CreateTrabajadorRequestDTO;
+import com.melateacafe.backend.dto.request.trabajador.UpdateTrabajadorRequestDTO;
+import com.melateacafe.backend.dto.response.trabajador.TrabajadorResponseDTO;
 import com.melateacafe.backend.entity.Trabajador;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface TrabajadorService {
-    Trabajador save(TrabajadorDTO trabajadorDTO);
-    Trabajador update(Integer id, TrabajadorDTO trabajadorDTO);
+    List<TrabajadorResponseDTO> findAll();
+    TrabajadorResponseDTO findById(Integer id);
+    TrabajadorResponseDTO create(CreateTrabajadorRequestDTO request);
+    TrabajadorResponseDTO update(Integer id, UpdateTrabajadorRequestDTO request);
     void delete(Integer id);
-    List<Trabajador> findAll();
-    Trabajador findById(Integer id);
-    List<Trabajador> findByCargo(Integer idCargo);
-    List<Trabajador> findByEstado(boolean estado);
+    List<TrabajadorResponseDTO> findByCargo(Integer idCargo);
+    List<TrabajadorResponseDTO> findByEstado(Boolean estado);
 }

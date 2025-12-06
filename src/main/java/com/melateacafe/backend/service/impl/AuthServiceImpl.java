@@ -1,7 +1,7 @@
 package com.melateacafe.backend.service.impl;
 
-import com.melateacafe.backend.dto.request.LoginRequestDTO;
-import com.melateacafe.backend.dto.response.LoginResponseDTO;
+import com.melateacafe.backend.dto.request.usuario.LoginRequestDTO;
+import com.melateacafe.backend.dto.response.usuario.LoginResponseDTO;
 import com.melateacafe.backend.entity.Usuario;
 import com.melateacafe.backend.security.JwtService;
 import com.melateacafe.backend.service.AuthService;

@@ -1,16 +1,16 @@
-package com.melateacafe.backend.dto.response;
+package com.melateacafe.backend.dto.response.usuario;
 
 import com.melateacafe.backend.entity.Usuario;
 
 public class LoginResponseDTO {
     private String token;
-    private Usuario usuario;
+    private UsuarioResponseDTO usuario;
     private String message;
 
     public LoginResponseDTO() {
     }
 
-    public LoginResponseDTO(String token, Usuario usuario, String message) {
+    public LoginResponseDTO(String token, UsuarioResponseDTO usuario, String message) {
         this.token = token;
         this.usuario = usuario;
         this.message = message;
@@ -24,11 +24,11 @@ public class LoginResponseDTO {
         this.token = token;
     }
 
-    public Usuario getUsuario() {
+    public UsuarioResponseDTO getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(UsuarioResponseDTO usuario) {
         this.usuario = usuario;
     }
 

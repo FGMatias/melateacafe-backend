@@ -1,7 +1,7 @@
 package com.melateacafe.backend.controller;
 
-import com.melateacafe.backend.dto.request.LoginRequestDTO;
-import com.melateacafe.backend.dto.response.LoginResponseDTO;
+import com.melateacafe.backend.dto.request.usuario.LoginRequestDTO;
+import com.melateacafe.backend.dto.response.usuario.LoginResponseDTO;
 import com.melateacafe.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,8 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO dto) {
-        LoginResponseDTO response = authService.login(dto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @GetMapping("/validate")

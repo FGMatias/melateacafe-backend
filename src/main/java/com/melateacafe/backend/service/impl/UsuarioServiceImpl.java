@@ -1,6 +1,10 @@
 package com.melateacafe.backend.service.impl;
 
 import com.melateacafe.backend.dto.UsuarioDTO;
+import com.melateacafe.backend.dto.request.usuario.CreateUsuarioRequestDTO;
+import com.melateacafe.backend.dto.response.rol.RolResponseDTO;
+import com.melateacafe.backend.dto.response.trabajador.TrabajadorResponseDTO;
+import com.melateacafe.backend.dto.response.usuario.UsuarioResponseDTO;
 import com.melateacafe.backend.entity.Rol;
 import com.melateacafe.backend.entity.Trabajador;
 import com.melateacafe.backend.entity.Usuario;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -34,82 +39,103 @@ public class UsuarioServiceImpl implements UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
-    public Usuario save(UsuarioDTO usuarioDTO) {
-        if (usuarioRepository.existsByUsername(usuarioDTO.getUsername())) {
-            throw new IllegalArgumentException("El nombre de usuario ya existe");
-        }
+    @Transactional(readOnly = true)
+    public List<UsuarioResponseDTO> findAll() {
+        return usuarioRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
 
-        if (usuarioRepository.existsByEmail(usuarioDTO.getEmail())) {
-            throw new IllegalArgumentException("El email ya está registrado");
-        }
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO findById(Integer id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        return convertToResponse(usuario);
+    }
 
-        Rol rol = rolRepository.findById(usuarioDTO.getIdRol())
-                .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
-
-        Trabajador trabajador = null;
-        if (usuarioDTO.getIdTrabajador() != null) {
-            trabajador = trabajadorRepository.findById(usuarioDTO.getIdTrabajador())
-                    .orElseThrow(() -> new EntityNotFoundException("Trabajador no encontrado"));
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setRol(rol);
-        usuario.setTrabajador(trabajador);
-        usuario.setUsername(usuarioDTO.getUsername());
-
-        String passwordEncriptado = passwordEncoder.encode(usuarioDTO.getPassword());
-        usuario.setPassword(passwordEncriptado);
-
-        usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setEstado(usuarioDTO.getEstado() != null ? usuarioDTO.getEstado() : true);
-        usuario.setFechaCreacion(LocalDateTime.now());
-
-        return usuarioRepository.save(usuario);
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO findByUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con username: " + username));
+        return convertToResponse(usuario);
     }
 
     @Override
     @Transactional
-    public Usuario update(Integer id, UsuarioDTO usuarioDTO) {
+    public UsuarioResponseDTO create(CreateUsuarioRequestDTO request) {
+        Trabajador trabajador = trabajadorRepository.findById(request.getIdTrabajador())
+                .orElseThrow(() -> new EntityNotFoundException("Trabajador no encontrado"));
+
+        if (usuarioRepository.existsByTrabajador_IdTrabajador(request.getIdTrabajador())) {
+            throw new IllegalStateException("Este trabajador ya tiene un usuario asociado");
+        }
+
+        if (usuarioRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("El username ya está en uso");
+        }
+
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("El email ya está en uso");
+        }
+
+        Rol rol = rolRepository.findById(request.getIdRol())
+                .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
+
+        Usuario usuario = new Usuario();
+        usuario.setTrabajador(trabajador);
+        usuario.setRol(rol);
+        usuario.setUsername(request.getUsername());
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+        usuario.setEstado(true);
+        usuario.setFechaCreacion(LocalDateTime.now());
+
+        Usuario saved = usuarioRepository.save(usuario);
+        return convertToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioResponseDTO update(Integer id, CreateUsuarioRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
-        if (!usuario.getUsername().equals(usuarioDTO.getUsername())) {
-            if (usuarioRepository.existsByUsername((usuarioDTO.getUsername()))) {
-                throw new IllegalArgumentException("El nombre de usuario ya existe");
-            }
+        Trabajador trabajador = trabajadorRepository.findById(request.getIdTrabajador())
+                .orElseThrow(() -> new EntityNotFoundException("Trabajador no encontrado"));
 
-            usuario.setUsername(usuarioDTO.getUsername());
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByTrabajador_IdTrabajador(request.getIdTrabajador());
+        if (usuarioExistente.isPresent() && usuarioExistente.get().getIdUsuario() != id) {
+            throw new IllegalStateException("Este trabajador ya está asociado a otro usuario");
         }
 
-        if (!usuario.getEmail().equals(usuarioDTO.getEmail())) {
-            if (usuarioRepository.existsByEmail(usuarioDTO.getEmail())) {
-                throw new IllegalArgumentException("El email ya esta registrado");
+        if (!usuario.getUsername().equals(request.getUsername())) {
+            if (usuarioRepository.existsByUsername(request.getUsername())) {
+                throw new IllegalArgumentException("El username ya está en uso");
             }
-
-            usuario.setEmail(usuario.getEmail());
+            usuario.setUsername(request.getUsername());
         }
 
-        Rol rol = rolRepository.findById(usuarioDTO.getIdRol())
+        if (!usuario.getEmail().equals(request.getEmail())) {
+            if (usuarioRepository.existsByEmail(request.getEmail())) {
+                throw new IllegalArgumentException("El email ya está en uso");
+            }
+            usuario.setEmail(request.getEmail());
+        }
+
+        Rol rol = rolRepository.findById(request.getIdRol())
                 .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado"));
 
+        usuario.setTrabajador(trabajador);
         usuario.setRol(rol);
 
-        if (usuarioDTO.getIdTrabajador() != null) {
-            Trabajador trabajador = trabajadorRepository.findById(usuarioDTO.getIdTrabajador())
-                    .orElseThrow(() -> new EntityNotFoundException("Trabajador no encontrado"));
-
-            usuario.setTrabajador(trabajador);
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isEmpty()) {
-            String passwordEncriptado = passwordEncoder.encode(usuarioDTO.getPassword());
-            usuario.setPassword(passwordEncriptado);
-        }
-
-        usuario.setEstado(usuarioDTO.getEstado());
-
-        return usuarioRepository.save(usuario);
+        Usuario updated = usuarioRepository.save(usuario);
+        return convertToResponse(updated);
     }
 
     @Override
@@ -117,34 +143,41 @@ public class UsuarioServiceImpl implements UsuarioService {
     public void delete(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-
-        usuario.setEstado(false);
-        usuarioRepository.save(usuario);
+        usuarioRepository.delete(usuario);
     }
 
-    @Override
-    public List<Usuario> findAll() {
-        return usuarioRepository.findAll();
+    private UsuarioResponseDTO convertToResponse(Usuario usuario) {
+        UsuarioResponseDTO response = new UsuarioResponseDTO();
+        response.setIdUsuario(usuario.getIdUsuario());
+        response.setRol(convertRolToResponse(usuario.getRol()));
+
+        if (usuario.getTrabajador() != null) {
+            response.setTrabajador(convertTrabajadorToResponse(usuario.getTrabajador()));
+        }
+
+        response.setUsername(usuario.getUsername());
+        response.setEmail(usuario.getEmail());
+        response.setEstado(usuario.isEstado());
+        response.setFechaCreacion(usuario.getFechaCreacion());
+
+        return response;
     }
 
-    @Override
-    public Usuario findById(Integer id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+    private RolResponseDTO convertRolToResponse(Rol rol) {
+        RolResponseDTO response = new RolResponseDTO();
+        response.setIdRol(rol.getIdRol());
+        response.setNombre(rol.getNombre());
+        response.setEstado(rol.isEstado());
+        response.setFechaCreacion(rol.getFechaCreacion());
+        return response;
     }
 
-    @Override
-    public Optional<Usuario> findByUsername(String username) {
-        return usuarioRepository.findByUsername(username);
-    }
-
-    @Override
-    public List<Usuario> findByEstado(boolean estado) {
-        return usuarioRepository.findByEstado(estado);
-    }
-
-    @Override
-    public boolean verificarPassword(String password, String passwordEncriptado) {
-        return passwordEncoder.matches(password, passwordEncriptado);
+    private TrabajadorResponseDTO convertTrabajadorToResponse(Trabajador trabajador) {
+        TrabajadorResponseDTO response = new TrabajadorResponseDTO();
+        response.setIdTrabajador(trabajador.getIdTrabajador());
+        response.setNombres(trabajador.getNombres());
+        response.setApellidoPaterno(trabajador.getApellidoPaterno());
+        response.setApellidoMaterno(trabajador.getApellidoMaterno());
+        return response;
     }
 }

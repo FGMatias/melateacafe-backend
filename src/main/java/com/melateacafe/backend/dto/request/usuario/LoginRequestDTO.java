@@ -1,4 +1,4 @@
-package com.melateacafe.backend.dto.request;
+package com.melateacafe.backend.dto.request.usuario;
 
 import jakarta.validation.constraints.NotBlank;
 

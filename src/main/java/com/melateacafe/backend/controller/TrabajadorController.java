@@ -1,6 +1,9 @@
 package com.melateacafe.backend.controller;
 
 import com.melateacafe.backend.dto.TrabajadorDTO;
+import com.melateacafe.backend.dto.request.trabajador.CreateTrabajadorRequestDTO;
+import com.melateacafe.backend.dto.request.trabajador.UpdateTrabajadorRequestDTO;
+import com.melateacafe.backend.dto.response.trabajador.TrabajadorResponseDTO;
 import com.melateacafe.backend.entity.Trabajador;
 import com.melateacafe.backend.service.TrabajadorService;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,80 +26,40 @@ public class TrabajadorController {
     private TrabajadorService trabajadorService;
 
     @GetMapping
-    public ResponseEntity<List<Trabajador>> getAll() {
-        logger.info("Obteniendo todos los trabajadores");
-        List<Trabajador> trabajadores = trabajadorService.findAll();
-        return ResponseEntity.ok(trabajadores);
+    public ResponseEntity<List<TrabajadorResponseDTO>> getAll() {
+        return ResponseEntity.ok(trabajadorService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
-        try {
-            logger.info("Obteniendo trabajador con id: " + id);
-            Trabajador trabajador = trabajadorService.findById(id);
-            return ResponseEntity.ok(trabajador);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<TrabajadorResponseDTO> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(trabajadorService.findById(id));
     }
 
     @GetMapping("/cargo/{idCargo}")
-    public ResponseEntity<List<Trabajador>> getByCargo(@PathVariable Integer idCargo) {
-        logger.info("Obteniendo trabajadores con cargo: " + idCargo);
-        List<Trabajador> trabajadores = trabajadorService.findByCargo(idCargo);
-        return ResponseEntity.ok(trabajadores);
+    public ResponseEntity<List<TrabajadorResponseDTO>> getByCargo(@PathVariable Integer idCargo) {
+        return ResponseEntity.ok(trabajadorService.findByCargo(idCargo));
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<Trabajador>> getByEstado(@PathVariable boolean estado) {
-        logger.info("Obteniendo trabajadores con estado: " + estado);
-        List<Trabajador> trabajadores = trabajadorService.findByEstado(estado);
-        return ResponseEntity.ok(trabajadores);
+    public ResponseEntity<List<TrabajadorResponseDTO>> getByEstado(@PathVariable Boolean estado) {
+        return ResponseEntity.ok(trabajadorService.findByEstado(estado));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody TrabajadorDTO trabajadorDTO) {
-        try {
-            logger.info("Creando trabajador: " + trabajadorDTO.getNombres());
-            Trabajador trabajador = trabajadorService.save(trabajadorDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(trabajador);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<TrabajadorResponseDTO> create(@Valid @RequestBody CreateTrabajadorRequestDTO request) {
+        return new ResponseEntity<>(trabajadorService.create(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<TrabajadorResponseDTO> update(
             @PathVariable Integer id,
-            @Valid @RequestBody TrabajadorDTO trabajadorDTO
-    ) {
-        try {
-            logger.info("Actualizando trabajador con id: " + id);
-            Trabajador trabajador = trabajadorService.update(id, trabajadorDTO);
-            return ResponseEntity.ok(trabajador);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+            @Valid @RequestBody UpdateTrabajadorRequestDTO request) {
+        return ResponseEntity.ok(trabajadorService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
-        try {
-            logger.info("Eliminando trabajador con id: " + id);
-            trabajadorService.delete(id);
-            return ResponseEntity.ok(Map.of("message", "Trabajador desactivado exitosamente"));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        trabajadorService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
