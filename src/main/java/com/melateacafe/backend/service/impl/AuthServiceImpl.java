@@ -2,6 +2,7 @@ package com.melateacafe.backend.service.impl;
 
 import com.melateacafe.backend.dto.request.usuario.LoginRequestDTO;
 import com.melateacafe.backend.dto.response.usuario.LoginResponseDTO;
+import com.melateacafe.backend.dto.response.usuario.UsuarioResponseDTO;
 import com.melateacafe.backend.entity.Usuario;
 import com.melateacafe.backend.security.JwtService;
 import com.melateacafe.backend.service.AuthService;
@@ -55,10 +56,7 @@ public class AuthServiceImpl implements AuthService {
             String token = jwtService.generateToken(userDetails);
             logger.info("Token JWT generado para: " + loginRequest.getUsername());
 
-            Usuario usuario = usuarioService.findByUsername(loginRequest.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado después de autenticación"));
-
-            usuario.setPassword(null);
+            UsuarioResponseDTO usuario = usuarioService.findByUsername(loginRequest.getUsername());
 
             LoginResponseDTO response = new LoginResponseDTO(token, usuario, "Login exitoso");
 

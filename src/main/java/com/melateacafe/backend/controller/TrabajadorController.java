@@ -1,12 +1,9 @@
 package com.melateacafe.backend.controller;
 
-import com.melateacafe.backend.dto.TrabajadorDTO;
 import com.melateacafe.backend.dto.request.trabajador.CreateTrabajadorRequestDTO;
 import com.melateacafe.backend.dto.request.trabajador.UpdateTrabajadorRequestDTO;
 import com.melateacafe.backend.dto.response.trabajador.TrabajadorResponseDTO;
-import com.melateacafe.backend.entity.Trabajador;
 import com.melateacafe.backend.service.TrabajadorService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController

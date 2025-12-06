@@ -1,13 +1,10 @@
 package com.melateacafe.backend.service;
 
-import com.melateacafe.backend.dto.TrabajadorDTO;
 import com.melateacafe.backend.dto.request.trabajador.CreateTrabajadorRequestDTO;
 import com.melateacafe.backend.dto.request.trabajador.UpdateTrabajadorRequestDTO;
 import com.melateacafe.backend.dto.response.trabajador.TrabajadorResponseDTO;
-import com.melateacafe.backend.entity.Trabajador;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TrabajadorService {
     List<TrabajadorResponseDTO> findAll();

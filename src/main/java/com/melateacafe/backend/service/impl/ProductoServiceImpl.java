@@ -1,6 +1,10 @@
 package com.melateacafe.backend.service.impl;
 
 import com.melateacafe.backend.dto.ProductoDTO;
+import com.melateacafe.backend.dto.request.producto.CreateProductoRequestDTO;
+import com.melateacafe.backend.dto.request.producto.UpdateProductoRequestDTO;
+import com.melateacafe.backend.dto.response.categoria.CategoriaResponseDTO;
+import com.melateacafe.backend.dto.response.producto.ProductoResponseDTO;
 import com.melateacafe.backend.entity.CategoriaProducto;
 import com.melateacafe.backend.entity.Producto;
 import com.melateacafe.backend.repository.CategoriaProductoRepository;
@@ -14,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductoServiceImpl implements ProductoService {
@@ -25,141 +30,151 @@ public class ProductoServiceImpl implements ProductoService {
     private CategoriaProductoRepository categoriaProductoRepository;
 
     @Override
-    @Transactional
-    public Producto save(ProductoDTO productoDTO) {
-        if (productoRepository.existsByNombre(productoDTO.getNombre())) {
-            throw new IllegalArgumentException("Ya existe un producto con ese nombre");
-        }
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findAll() {
+        return productoRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
 
-        CategoriaProducto categoria = categoriaProductoRepository.findById(productoDTO.getIdCategoria())
-                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
-
-        Producto producto = new Producto();
-        producto.setCategoriaProducto(categoria);
-        producto.setNombre(productoDTO.getNombre());
-        producto.setDescripcion(productoDTO.getDescripcion());
-        producto.setPrecio(productoDTO.getPrecio());
-        producto.setImagenUrl(productoDTO.getImagenUrl());
-        producto.setStockActual(productoDTO.getStockActual() != null
-            ? productoDTO.getStockActual()
-            : 0
-        );
-        producto.setStockMinimo(productoDTO.getStockMinimo() != null
-            ? productoDTO.getStockMinimo()
-            : 0
-        );
-        producto.setEstado(productoDTO.getEstado() != null
-            ? productoDTO.getEstado()
-            : true
-        );
-        producto.setFechaCreacion(LocalDateTime.now());
-
-        return productoRepository.save(producto);
+    @Override
+    @Transactional(readOnly = true)
+    public ProductoResponseDTO findById(Integer id) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + id));
+        return convertToResponse(producto);
     }
 
     @Override
     @Transactional
-    public Producto update(Integer id, ProductoDTO productoDTO) {
+    public ProductoResponseDTO create(CreateProductoRequestDTO request) {
+        CategoriaProducto categoria = categoriaProductoRepository.findById(request.getIdCategoriaProducto())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con id: " + request.getIdCategoriaProducto()));
+
+        if (productoRepository.existsByNombre(request.getNombre())) {
+            throw new IllegalArgumentException("Ya existe un producto con el nombre: " + request.getNombre());
+        }
+
+        Producto producto = new Producto();
+        producto.setCategoriaProducto(categoria);
+        producto.setNombre(request.getNombre());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setImagenUrl(request.getImagenUrl());
+        producto.setEstado(request.getEstado() != null ? request.getEstado() : true);
+
+        Producto saved = productoRepository.save(producto);
+        return convertToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public ProductoResponseDTO update(Integer id, UpdateProductoRequestDTO request) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + id));
 
-        if (!producto.getNombre().equals(productoDTO.getNombre()) &&
-                productoRepository.existsByNombre(productoDTO.getNombre())) {
-            throw new IllegalArgumentException("Ya existe un producto con ese nombre");
+        CategoriaProducto categoria = categoriaProductoRepository.findById(request.getIdCategoriaProducto())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con id: " + request.getIdCategoriaProducto()));
+
+        if (!producto.getNombre().equals(request.getNombre())) {
+            if (productoRepository.existsByNombre(request.getNombre())) {
+                throw new IllegalArgumentException("Ya existe un producto con el nombre: " + request.getNombre());
+            }
         }
 
-        if (!producto.getCategoriaProducto().getIdCategoriaProducto()
-                .equals(productoDTO.getIdCategoria())) {
-            CategoriaProducto categoria = categoriaProductoRepository
-                    .findById(productoDTO.getIdCategoria())
-                    .orElseThrow(() -> new EntityNotFoundException("Categoria no encontrada"));
+        producto.setCategoriaProducto(categoria);
+        producto.setNombre(request.getNombre());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setImagenUrl(request.getImagenUrl());
+        producto.setEstado(request.getEstado() != null ? request.getEstado() : producto.isEstado());
 
-            producto.setCategoriaProducto(categoria);
-        }
-
-        producto.setNombre(producto.getNombre());
-        producto.setDescripcion(productoDTO.getDescripcion());
-        producto.setPrecio(productoDTO.getPrecio());
-        producto.setImagenUrl(productoDTO.getImagenUrl());
-        producto.setStockActual(productoDTO.getStockActual());
-        producto.setStockMinimo(productoDTO.getStockMinimo());
-        producto.setEstado(productoDTO.getEstado());
-
-        return productoRepository.save(producto);
+        Producto updated = productoRepository.save(producto);
+        return convertToResponse(updated);
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
         Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
-
-        producto.setEstado(false);
-
-        productoRepository.save(producto);
+                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + id));
+        productoRepository.delete(producto);
     }
 
     @Override
-    public List<Producto> findAll() {
-        return productoRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findActivos() {
+        return productoRepository.findByEstado(true).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Producto findById(Integer id) {
-        return productoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByCategoria(Integer idCategoria) {
+        return productoRepository.findByCategoriaProducto_IdCategoriaProducto(idCategoria).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Producto> findByCategoria(Integer idCategoria) {
-        return productoRepository.findByCategoriaProducto_IdCategoriaProducto(idCategoria);
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Producto> findActivos() {
-        return productoRepository.findByEstadoTrue();
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findDestacados() {
+        return productoRepository.findProductosDestacados().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Producto> findByNombre(String nombre) {
-        return productoRepository.findByNombreContainingIgnoreCase(nombre);
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findWithStockBajo() {
+        return productoRepository.findProductosConStockBajo().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Producto> findByRangoPrecio(BigDecimal precioMin, BigDecimal precioMax) {
-        return productoRepository.findByPrecioBetween(precioMin, precioMax);
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> buscarProductos(Integer categoria, BigDecimal precioMin, BigDecimal precioMax, String nombre) {
+        return productoRepository.buscarProductos(categoria, precioMin, precioMax, nombre).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Producto> buscarProductos(Integer idCategoria, BigDecimal precioMin, BigDecimal precioMax, String nombre) {
-        return productoRepository.buscarProductos(idCategoria, precioMin, precioMax, nombre);
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByEstado(Boolean estado) {
+        return productoRepository.findByEstado(estado).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Producto> findDestacados() {
-        return productoRepository.findProductosDestacados();
+    private ProductoResponseDTO convertToResponse(Producto producto) {
+        ProductoResponseDTO response = new ProductoResponseDTO();
+        response.setIdProducto(producto.getIdProducto());
+        response.setCategoriaProducto(convertCategoriaToResponse(producto.getCategoriaProducto()));
+        response.setNombre(producto.getNombre());
+        response.setDescripcion(producto.getDescripcion());
+        response.setPrecio(producto.getPrecio());
+        response.setImagenUrl(producto.getImagenUrl());
+        response.setEstado(producto.isEstado());
+        return response;
     }
 
-    @Override
-    public List<Producto> findConStockBajo() {
-        return productoRepository.findProductosConStockBajo();
-    }
-
-    @Override
-    @Transactional
-    public boolean actualizarStock(Integer idProducto, Integer cantidad) {
-        Producto producto = productoRepository.findById(idProducto)
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado"));
-
-        int nuevoStock = producto.getStockActual() + cantidad;
-
-        if (nuevoStock < 0) {
-            throw new IllegalArgumentException("Stock insuficiente");
-        }
-
-        producto.setStockActual(nuevoStock);
-        productoRepository.save(producto);
-
-        return true;
+    private CategoriaResponseDTO convertCategoriaToResponse(CategoriaProducto categoria) {
+        CategoriaResponseDTO response = new CategoriaResponseDTO();
+        response.setIdCategoriaProducto(categoria.getIdCategoriaProducto());
+        response.setNombre(categoria.getNombre());
+        response.setDescripcion(categoria.getDescripcion());
+        response.setEstado(categoria.isEstado());
+        return response;
     }
 }

@@ -1,13 +1,9 @@
 package com.melateacafe.backend.controller;
 
-import com.melateacafe.backend.dto.UsuarioDTO;
 import com.melateacafe.backend.dto.request.usuario.CreateUsuarioRequestDTO;
-import com.melateacafe.backend.dto.request.usuario.LoginRequestDTO;
-import com.melateacafe.backend.dto.response.usuario.LoginResponseDTO;
+import com.melateacafe.backend.dto.request.usuario.UpdateUsuarioRequestDTO;
 import com.melateacafe.backend.dto.response.usuario.UsuarioResponseDTO;
-import com.melateacafe.backend.entity.Usuario;
 import com.melateacafe.backend.service.UsuarioService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -49,7 +44,7 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> update(
             @PathVariable Integer id,
-            @Valid @RequestBody CreateUsuarioRequestDTO request) {
+            @Valid @RequestBody UpdateUsuarioRequestDTO request) {
         return ResponseEntity.ok(usuarioService.update(id, request));
     }
 

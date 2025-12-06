@@ -1,6 +1,9 @@
 package com.melateacafe.backend.controller;
 
 import com.melateacafe.backend.dto.ProductoDTO;
+import com.melateacafe.backend.dto.request.producto.CreateProductoRequestDTO;
+import com.melateacafe.backend.dto.request.producto.UpdateProductoRequestDTO;
+import com.melateacafe.backend.dto.response.producto.ProductoResponseDTO;
 import com.melateacafe.backend.entity.Producto;
 import com.melateacafe.backend.service.ProductoService;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -23,138 +25,83 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
-    @GetMapping()
-    public ResponseEntity<List<Producto>> getAll() {
+    @GetMapping
+    public ResponseEntity<List<ProductoResponseDTO>> getAll() {
         logger.info("Obteniendo todos los productos");
-        List<Producto> productos = productoService.findAll();
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.findAll());
     }
 
     @GetMapping("/activos")
-    public ResponseEntity<List<Producto>> getActivos() {
+    public ResponseEntity<List<ProductoResponseDTO>> getActivos() {
         logger.info("Obteniendo todos los productos activos");
-        List<Producto> productos = productoService.findActivos();
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.findActivos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Integer id) {
-        try {
-            logger.info("Obteniendo producto con id: " + id);
-            Producto producto = productoService.findById(id);
-            return ResponseEntity.ok(producto);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<ProductoResponseDTO> findById(@PathVariable Integer id) {
+        logger.info("Obteniendo producto con id: " + id);
+        return ResponseEntity.ok(productoService.findById(id));
     }
 
     @GetMapping("/categoria/{idCategoria}")
-    public ResponseEntity<List<Producto>> getByCategoria(@PathVariable Integer idCategoria) {
-        logger.info("Obteniendo productos con categoria: " + idCategoria);
-        List<Producto> productos = productoService.findByCategoria(idCategoria);
-        return ResponseEntity.ok(productos);
+    public ResponseEntity<List<ProductoResponseDTO>> getByCategoria(@PathVariable Integer idCategoria) {
+        logger.info("Obteniendo productos con categoría: " + idCategoria);
+        return ResponseEntity.ok(productoService.findByCategoria(idCategoria));
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Producto>> findProductos(@RequestParam(name = "q") String query) {
+    public ResponseEntity<List<ProductoResponseDTO>> findProductos(@RequestParam(name = "q") String query) {
         logger.info("Obteniendo productos con query: " + query);
-        List<Producto> productos = productoService.findByNombre(query);
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.findByNombre(query));
     }
 
     @GetMapping("/filtrar")
-    public ResponseEntity<List<Producto>> filterProductos(
+    public ResponseEntity<List<ProductoResponseDTO>> filterProductos(
             @RequestParam(required = false) Integer categoria,
             @RequestParam(required = false) BigDecimal precioMin,
             @RequestParam(required = false) BigDecimal precioMax,
             @RequestParam(required = false) String nombre
     ) {
         logger.info("Filtrando productos");
-        List<Producto> productos = productoService.buscarProductos(categoria, precioMin, precioMax, nombre);
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.buscarProductos(categoria, precioMin, precioMax, nombre));
     }
 
     @GetMapping("/destacados")
-    public ResponseEntity<List<Producto>> getDestacados() {
+    public ResponseEntity<List<ProductoResponseDTO>> getDestacados() {
         logger.info("Obteniendo productos destacados");
-        List<Producto> productos = productoService.findDestacados();
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.findDestacados());
     }
 
     @GetMapping("/stock-bajo")
-    public ResponseEntity<List<Producto>> getWithStockBajo() {
+    public ResponseEntity<List<ProductoResponseDTO>> getWithStockBajo() {
         logger.info("Obteniendo productos con stock bajo");
-        List<Producto> productos = productoService.findConStockBajo();
-        return ResponseEntity.ok(productos);
+        return ResponseEntity.ok(productoService.findWithStockBajo());
+    }
+
+    @GetMapping("/estado/{estado}")
+    public ResponseEntity<List<ProductoResponseDTO>> getByEstado(@PathVariable Boolean estado) {
+        logger.info("Obteniendo productos con estado: " + estado);
+        return ResponseEntity.ok(productoService.findByEstado(estado));
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody ProductoDTO productoDTO) {
-        try {
-            logger.info("Creando nuevo producto: " + productoDTO.getNombre());
-            Producto producto = productoService.save(productoDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(producto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<ProductoResponseDTO> create(@Valid @RequestBody CreateProductoRequestDTO request) {
+        logger.info("Creando nuevo producto");
+        return new ResponseEntity<>(productoService.create(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<ProductoResponseDTO> update(
             @PathVariable Integer id,
-            @Valid @RequestBody ProductoDTO productoDTO
-    ) {
-        try {
-            logger.info("Actualizando producto con id: " + id);
-            Producto producto = productoService.update(id, productoDTO);
-            return ResponseEntity.ok(producto);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+            @Valid @RequestBody UpdateProductoRequestDTO request) {
+        logger.info("Actualizando producto con id: " + id);
+        return ResponseEntity.ok(productoService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
-        try {
-            logger.info("Eliminando producto con id: " + id);
-            productoService.delete(id);
-            return ResponseEntity.ok(Map.of("message", "Producto desactivado correctamente"));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    @PatchMapping("/{id}/stock")
-    public ResponseEntity<?> actualizarStock(
-            @PathVariable Integer id,
-            @RequestBody Map<String, Integer> body
-    ) {
-        try {
-            Integer cantidad = body.get("cantidad");
-            if (cantidad == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Se requiere el campo 'cantidad'"));
-            }
-
-            logger.info("Actualizando stock del producto con id: " + id);
-            productoService.actualizarStock(id, cantidad);
-            return ResponseEntity.ok(Map.of("message", "Stock actualizado correctamente"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", e.getMessage()));
-        }
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        logger.info("Eliminando producto con id: " + id);
+        productoService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

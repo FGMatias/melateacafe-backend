@@ -1,9 +1,6 @@
 package com.melateacafe.backend.dto.request.producto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
@@ -12,19 +9,20 @@ public class UpdateProductoRequestDTO {
     private Integer idCategoriaProducto;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 255)
+    @Size(min = 2, max = 255, message = "El nombre debe tener entre 2 y 255 caracteres")
     private String nombre;
 
-    @Size(max = 500)
+    @Size(max = 500, message = "La descripción no puede exceder 500 caracteres")
     private String descripcion;
 
     @NotNull(message = "El precio es obligatorio")
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.01", message = "El precio debe ser mayor a 0")
+    @Digits(integer = 8, fraction = 2, message = "El precio debe tener máximo 8 dígitos enteros y 2 decimales")
     private BigDecimal precio;
 
+    @Size(max = 500, message = "La URL de la imagen no puede exceder 500 caracteres")
     private String imagenUrl;
 
-    @NotNull(message = "El estado es obligatorio")
     private Boolean estado;
 
     public UpdateProductoRequestDTO() {

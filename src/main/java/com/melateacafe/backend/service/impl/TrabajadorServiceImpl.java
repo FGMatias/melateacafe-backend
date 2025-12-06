@@ -1,6 +1,5 @@
 package com.melateacafe.backend.service.impl;
 
-import com.melateacafe.backend.dto.TrabajadorDTO;
 import com.melateacafe.backend.dto.request.trabajador.CreateTrabajadorRequestDTO;
 import com.melateacafe.backend.dto.request.trabajador.UpdateTrabajadorRequestDTO;
 import com.melateacafe.backend.dto.response.cargo.CargoResponseDTO;

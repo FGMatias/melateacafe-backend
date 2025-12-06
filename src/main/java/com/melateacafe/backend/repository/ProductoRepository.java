@@ -13,7 +13,7 @@ import java.util.List;
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     List<Producto> findByCategoriaProducto_IdCategoriaProducto(Integer idCategoria);
 
-    List<Producto> findByEstadoTrue();
+    List<Producto> findByEstado(Boolean estado);
 
     List<Producto> findByNombreContainingIgnoreCase(String nombre);
 

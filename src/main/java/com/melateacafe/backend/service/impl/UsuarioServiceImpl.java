@@ -1,7 +1,7 @@
 package com.melateacafe.backend.service.impl;
 
-import com.melateacafe.backend.dto.UsuarioDTO;
 import com.melateacafe.backend.dto.request.usuario.CreateUsuarioRequestDTO;
+import com.melateacafe.backend.dto.request.usuario.UpdateUsuarioRequestDTO;
 import com.melateacafe.backend.dto.response.rol.RolResponseDTO;
 import com.melateacafe.backend.dto.response.trabajador.TrabajadorResponseDTO;
 import com.melateacafe.backend.dto.response.usuario.UsuarioResponseDTO;
@@ -98,7 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO update(Integer id, CreateUsuarioRequestDTO request) {
+    public UsuarioResponseDTO update(Integer id, UpdateUsuarioRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
